@@ -2,7 +2,7 @@ package main
 
 
 func main() {
-    startREPL()
+    startREPL(getConfig())
 }
 
 
