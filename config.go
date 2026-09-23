@@ -2,6 +2,8 @@ package main
 
 type config struct{
     commands map[string]cliCommand
+    next     string
+    previous string   
 }
 
 type cliCommand struct {
@@ -22,11 +24,23 @@ func getCommands()map[string]cliCommand{
             description: "Displays a help message",
             callback:    commandHelp,
         },
+        "map": {
+            name:        "map",
+            description: "Displays the name of locations",
+            callback:    commandMap,
+        },
+        "mapb": {
+            name:        "mapb",
+            description: "Displays the name of locations at the previous page",
+            callback:    commandMapb,
+        }, 
     }
 }
 
 func getConfig() *config {
     return &config{
         commands: getCommands(),
+        next:     "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20",
+        previous: "",  
     }
 }

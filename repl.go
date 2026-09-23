@@ -43,3 +43,41 @@ func commandHelp(config *config) error {
     }
     return nil
 }
+
+func commandMap(config *config) error {
+    url := config.next
+    locations, err := getLocations(url)
+    if err != nil {
+        return err    
+    }
+    
+    config.next = locations.Next
+    config.previous = locations.Previous    
+
+    for _, location := range locations.Results {
+        fmt.Println(location.Name)
+    }
+
+    return nil
+}
+
+func commandMapb(config *config) error {
+    url := config.previous
+    if url == "" {
+        fmt.Println("you're on the first page")
+        return nil
+    }
+    locations, err := getLocations(url)
+    if err != nil {
+        return err    
+    }
+    
+    config.next = locations.Next
+    config.previous = locations.Previous    
+
+    for _, location := range locations.Results {
+        fmt.Println(location.Name)
+    }
+
+    return nil
+}
