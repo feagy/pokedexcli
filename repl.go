@@ -36,7 +36,7 @@ func commandExit(config *config) error {
 }
 
 func commandHelp(config *config) error {
-    fmt.Println("Welcome to the Pokedex!\n")
+    fmt.Println("Welcome to the Pokedex!")
     for _, v := range config.commands {
         fmt.Printf("Command: %v\n", v.name)
         fmt.Printf("Description: %v\n\n", v.description)
@@ -46,7 +46,9 @@ func commandHelp(config *config) error {
 
 func commandMap(config *config) error {
     url := config.next
-    locations, err := getLocations(url)
+
+    locations, err := getLocations(url, config)
+
     if err != nil {
         return err    
     }
@@ -67,7 +69,7 @@ func commandMapb(config *config) error {
         fmt.Println("you're on the first page")
         return nil
     }
-    locations, err := getLocations(url)
+    locations, err := getLocations(url, config)
     if err != nil {
         return err    
     }

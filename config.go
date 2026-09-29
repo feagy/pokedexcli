@@ -1,9 +1,14 @@
 package main
 
+import (
+    "time"
+)
+
 type config struct{
     commands map[string]cliCommand
     next     string
-    previous string   
+    previous string
+    cache *cache
 }
 
 type cliCommand struct {
@@ -41,6 +46,7 @@ func getConfig() *config {
     return &config{
         commands: getCommands(),
         next:     "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20",
-        previous: "",  
+        previous: "",
+        cache: newCache(10 * time.Second),  
     }
 }
