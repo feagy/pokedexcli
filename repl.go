@@ -5,6 +5,7 @@ import (
     "bufio"
     "os"
     "fmt"
+    "math/rand"
 )
 
 func cleanInput(text string) []string {
@@ -58,7 +59,7 @@ func commandMap(config *config, arguments []string) error {
     config.previous = locations.Previous    
 
     for _, location := range locations.Results {
-        fmt.Println(location.Name)
+        fmt.Println("- " + location.Name)
     }
 
     return nil
@@ -79,7 +80,7 @@ func commandMapb(config *config, arguments []string) error {
     config.previous = locations.Previous    
 
     for _, location := range locations.Results {
-        fmt.Println(location.Name)
+        fmt.Println("- " + location.Name)
     }
 
     return nil
@@ -87,18 +88,43 @@ func commandMapb(config *config, arguments []string) error {
 
 func commandExplore(config *config, arguments []string) error {
     if len(arguments) == 0 {
-        fmt.Println("you should provide the area name you want to explore")
+        fmt.Println("you should provide the name of the area you want to explore")
         return nil
     }
     url := config.explore_url + arguments[0]
+    fmt.Printf("Exploring %v\n", arguments[0])
     encounters, err := getEncounters(url, config)
     if err != nil {
         return err    
     }
-
+    
+    fmt.Println("Found Pokemon:")
     for _, encounter := range encounters.PokemonEncounters {
-        fmt.Println(encounter.Pokemon.Name)
+        fmt.Println("- " + encounter.Pokemon.Name)
     }
 
+    return nil
+}
+
+func commandCatch(config *config, arguments []string) error {
+    if len(arguments) == 0 {
+        fmt.Println("you should provide the name of the pokemon you want to catch")
+        return nil
+    }
+
+    url := config.pokemon_url + arguments[0]
+    pokemon, err := getPokemon(url, config)
+    if err != nil {
+        return err    
+    }
+    
+    fmt.Printf("Throwing a Pokeball at %v...\n", arguments[0])
+    res := rand.Intn(pokemon.BaseExperience)
+    if res <= config.catching_threshold {
+        fmt.Printf("%v was caught!\n", arguments[0])
+        config.pokedex[arguments[0]] = pokemon
+    } else {
+        fmt.Printf("%v escaped!\n", arguments[0])
+    }
     return nil
 }

@@ -28,6 +28,25 @@ type encounters struct {
     } `json:"pokemon_encounters"`
 }
 
+type pokemon struct {
+    Name string `json:"name"`
+    Height int `json:"height"`
+    Weight int `json:"weight"`
+    BaseExperience int `json:"base_experience"`
+    Stats []struct {
+        BaseStat int `json:"base_stat"`
+        Stat struct {
+            Name string `json:"name"`
+            Url string `json:"url"`
+        } `json:"stat"`
+    } `json:"stats"`
+    Types []struct {
+        Type struct{
+            Name string `json:"name"`
+            Url string `json:"url"`
+        } `json:"type"`
+    } `json:"types"`
+}
 
 func getLocations(url string, config *config) (locations, error)  {
     dat, ok := config.cache.Get(url)
@@ -58,7 +77,6 @@ func getLocations(url string, config *config) (locations, error)  {
 func getEncounters(url string, config *config) (encounters, error) {
     dat, ok := config.cache.Get(url)
     if !ok {
-        fmt.Println("cache not used")
         res, err := http.Get(url)
         if err != nil {
             return encounters{}, err
@@ -74,15 +92,38 @@ func getEncounters(url string, config *config) (encounters, error) {
 	    }
         dat = new_dat
         config.cache.Add(url, dat)
-    }else {
-        fmt.Println("cache used")
-
     }
-    
     enctrs := encounters{}
 	err := json.Unmarshal(dat, &enctrs)
 	if err != nil {
 		return encounters{}, err
 	}
     return enctrs, nil
+}
+
+func getPokemon(url string, config *config) (pokemon, error) {
+    dat, ok := config.cache.Get(url)
+    if !ok {
+        res, err := http.Get(url)
+        if err != nil {
+            return pokemon{}, err
+        }
+        defer res.Body.Close()
+        if res.StatusCode == 404 {
+            return pokemon{}, fmt.Errorf("Pokemon not found")
+        }
+
+	    new_dat, err := io.ReadAll(res.Body)
+	    if err != nil {
+		    return pokemon{}, err
+	    }
+        dat = new_dat
+        config.cache.Add(url, dat)
+    }
+    pkmn := pokemon{}
+	err := json.Unmarshal(dat, &pkmn)
+	if err != nil {
+		return pokemon{}, err
+	}
+    return pkmn, nil
 }

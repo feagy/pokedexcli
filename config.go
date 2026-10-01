@@ -9,6 +9,9 @@ type config struct{
     next     string
     previous string
     explore_url string
+    pokemon_url string
+    pokedex map[string]pokemon
+    catching_threshold int
     cache *cache
 }
 
@@ -45,6 +48,11 @@ func getCommands()map[string]cliCommand{
             description: "Explore the are for pokemons",
             callback:    commandExplore,
         },
+        "catch": {
+            name:        "catch <pokemon_name>",
+            description: "Try to catch the pokemon",
+            callback:    commandCatch,
+        },
     }
 }
 
@@ -54,6 +62,9 @@ func getConfig() *config {
         next:     "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20",
         previous: "",
         explore_url: "https://pokeapi.co/api/v2/location-area/",
+        pokemon_url: "https://pokeapi.co/api/v2/pokemon/",
+        pokedex: map[string]pokemon{},
+        catching_threshold: 40,
         cache: newCache(10 * time.Second),  
     }
 }
